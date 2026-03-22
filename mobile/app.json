@@ -20,7 +20,9 @@
     "android": {
       "package": "com.nutriguard.app",
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -31,7 +33,11 @@
         }
       ],
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6f7b9b68-a7ee-4ebf-a825-fdb17a961661"
+      }
+    }
   }
 }
-
