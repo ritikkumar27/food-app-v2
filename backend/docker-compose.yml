@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build: .
@@ -9,5 +7,11 @@ services:
       - "5000:5000"
     env_file:
       - .env
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
     # Optional: If you had a local MongoDB, you'd add it here.
     # But since you use MongoDB Atlas, we just need the backend.
