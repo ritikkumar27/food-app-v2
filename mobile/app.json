@@ -32,7 +32,15 @@
           "cameraPermission": "NutriGuard needs camera access to scan food barcodes"
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ]
     ],
     "extra": {
       "eas": {
