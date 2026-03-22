@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "NutriGuard",
+    "slug": "nutriguard",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0E1A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nutriguard.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "NutriGuard needs camera access to scan food barcodes"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0E1A"
+      },
+      "package": "com.nutriguard.app",
+      "permissions": ["CAMERA"]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "NutriGuard needs camera access to scan food barcodes"
+        }
+      ]
+    ]
+  }
+}
