@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: nutriguard-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    # Optional: If you had a local MongoDB, you'd add it here.
+    # But since you use MongoDB Atlas, we just need the backend.
