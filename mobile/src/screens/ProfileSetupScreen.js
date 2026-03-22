@@ -66,7 +66,8 @@ const ProfileSetupScreen = ({ navigation }) => {
         dietaryPreference,
       });
       await refreshUser();
-      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+      // No manual navigation needed — AppNavigator reactively switches to Main
+      // once profileCompleted becomes true after refreshUser()
     } catch (error) {
       Alert.alert('Error', 'Failed to save profile. Please try again.');
     } finally {
