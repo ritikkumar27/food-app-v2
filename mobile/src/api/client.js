@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 // const BASE_URL = 'https://inger-inorganic-jackie.ngrok-free.dev';
 const BASE_URL = 'https://api.ritikkumar.dev';
 
+
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 15000,
