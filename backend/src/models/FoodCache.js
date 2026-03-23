@@ -11,6 +11,7 @@ const foodCacheSchema = new mongoose.Schema({
   brands: { type: String, default: '' },
   imageUrl: { type: String, default: '' },
   quantity: { type: String, default: '' },
+  source: { type: String, default: 'openfoodfacts' },
   categories: { type: String, default: '' },
   ingredientsList: { type: String, default: '' },
 

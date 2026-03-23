@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const foodRoutes = require('./routes/foodRoutes');
 const analysisRoutes = require('./routes/analysisRoutes');
+const consumptionRoutes = require('./routes/consumptionRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,6 +46,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/food', foodRoutes);
 app.use('/analyze', analysisRoutes);
+app.use('/', consumptionRoutes);
 
 // ─── 404 handler ─────────────────────────────────────────────────────
 app.use((_req, res) => {
