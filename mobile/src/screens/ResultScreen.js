@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, Image,
-  StyleSheet, ScrollView, Alert,
+  StyleSheet, ScrollView, Alert, TextInput, ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { analysisAPI } from '../api/client';
+import { analysisAPI, consumptionAPI } from '../api/client';
 import RiskBadge from '../components/RiskBadge';
 import WarningCard from '../components/WarningCard';
 import NutrientBar from '../components/NutrientBar';
@@ -25,6 +25,10 @@ const ResultScreen = ({ route, navigation }) => {
   const [error, setError] = useState(null);
   const [expandedNutrients, setExpandedNutrients] = useState(false);
   const [expandedAdditives, setExpandedAdditives] = useState(false);
+
+  const [quantity, setQuantity] = useState('');
+  const [isLogging, setIsLogging] = useState(false);
+  const [logInsight, setLogInsight] = useState(null);
 
   useEffect(() => {
     if (!analysisResult && barcode) {
@@ -47,6 +51,28 @@ const ResultScreen = ({ route, navigation }) => {
       setError(msg);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleLogConsumption = async () => {
+    if (!quantity || isNaN(quantity) || Number(quantity) <= 0) {
+      Alert.alert('Invalid Quantity', 'Please enter a valid amount in grams.');
+      return;
+    }
+    
+    setIsLogging(true);
+    setLogInsight(null);
+    try {
+      const response = await consumptionAPI.logConsumption(barcode, Number(quantity));
+      if (response.data?.success) {
+        setLogInsight(response.data.data.insight);
+        Alert.alert('Success', 'Consumption logged successfully!');
+        setQuantity('');
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to log consumption. Please try again.');
+    } finally {
+      setIsLogging(false);
     }
   };
 
@@ -193,6 +219,43 @@ const ResultScreen = ({ route, navigation }) => {
           </View>
         )}
 
+        {/* ═══ CONSUMPTION LOGGING ═══ */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="scale-outline" size={20} color={colors.primary} />
+            <Text style={styles.cardTitle}>Log Consumption</Text>
+          </View>
+          <View style={styles.logContainer}>
+            <TextInput
+              style={styles.quantityInput}
+              placeholder="e.g. 150"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+              value={quantity}
+              onChangeText={setQuantity}
+            />
+            <Text style={styles.unitText}>grams</Text>
+            <TouchableOpacity 
+              style={[styles.logBtn, isLogging && styles.logBtnDisabled]}
+              onPress={handleLogConsumption}
+              disabled={isLogging}
+            >
+              {isLogging ? <ActivityIndicator color={colors.white} /> : <Text style={styles.logBtnText}>Log It</Text>}
+            </TouchableOpacity>
+          </View>
+          
+          {logInsight && (
+            <View style={[styles.insightBox, { 
+              borderColor: logInsight.harmLevel === 'high' ? colors.highRisk : 
+                           logInsight.harmLevel === 'moderate' ? colors.moderate : colors.safe 
+            }]}>
+              <Text style={styles.insightTitle}>AI Insight: {logInsight.harmLevel.toUpperCase()} IMPACT</Text>
+              <Text style={styles.insightText}>{logInsight.explanation}</Text>
+              <Text style={styles.insightRec}>{logInsight.recommendation}</Text>
+            </View>
+          )}
+        </View>
+
         {/* ═══ EXPANDABLE: Nutrition Details ═══ */}
         <TouchableOpacity
           style={styles.expandableHeader}
@@ -278,6 +341,18 @@ const ResultScreen = ({ route, navigation }) => {
             </View>
           </View>
         )}
+
+        {/* ═══ MANUAL ENTRY FALLBACK ═══ */}
+        <View style={styles.manualFallbackContainer}>
+          <Text style={styles.manualFallbackText}>Not the right product?</Text>
+          <TouchableOpacity 
+            style={styles.manualFallbackBtn}
+            onPress={() => navigation.navigate('ManualEntry')}
+          >
+            <Ionicons name="create-outline" size={16} color={colors.primary} />
+            <Text style={styles.manualFallbackBtnText}>Enter Product Manually</Text>
+          </TouchableOpacity>
+        </View>
 
       </ScrollView>
     </View>
@@ -370,6 +445,29 @@ const styles = StyleSheet.create({
   novaTextActive: { color: colors.white },
   novaLabel: { fontSize: fontSize.sm, color: colors.textMuted, textAlign: 'center' },
 
+  // Logging
+  logContainer: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.sm,
+  },
+  quantityInput: {
+    flex: 1, backgroundColor: colors.surfaceLight, borderRadius: borderRadius.md,
+    padding: spacing.md, fontSize: fontSize.md, color: colors.textPrimary,
+  },
+  unitText: { fontSize: fontSize.md, color: colors.textSecondary },
+  logBtn: {
+    backgroundColor: colors.primary, borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.lg, paddingVertical: spacing.md,
+  },
+  logBtnDisabled: { opacity: 0.7 },
+  logBtnText: { color: colors.white, fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  insightBox: {
+    marginTop: spacing.lg, padding: spacing.md, borderRadius: borderRadius.md,
+    borderLeftWidth: 4, backgroundColor: colors.surfaceLight,
+  },
+  insightTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, marginBottom: 4 },
+  insightText: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: spacing.sm },
+  insightRec: { fontSize: fontSize.sm, color: colors.primary, fontWeight: fontWeight.semibold },
+
   // Expandable
   expandableHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
@@ -405,6 +503,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
   },
   nutriScoreText: { fontSize: fontSize.lg, fontWeight: fontWeight.heavy, color: colors.white },
+
+  // Manual Fallback
+  manualFallbackContainer: { marginTop: spacing.xxxl, alignItems: 'center' },
+  manualFallbackText: { fontSize: fontSize.sm, color: colors.textMuted, marginBottom: spacing.sm },
+  manualFallbackBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, padding: spacing.xs },
+  manualFallbackBtnText: { fontSize: fontSize.sm, color: colors.primary, fontWeight: fontWeight.bold },
 
   // Error
   errorContainer: {

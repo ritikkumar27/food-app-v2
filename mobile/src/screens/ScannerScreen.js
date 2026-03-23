@@ -85,10 +85,19 @@ const ScannerScreen = ({ navigation }) => {
 
         {/* Bottom */}
         <View style={styles.bottom}>
-          {scanned && (
+          {scanned ? (
             <TouchableOpacity style={styles.rescanBtn} onPress={() => setScanned(false)}>
               <Ionicons name="refresh" size={20} color={colors.white} />
               <Text style={styles.rescanText}>Scan Again</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity 
+              style={[styles.rescanBtn, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }]}
+              onPress={() => navigation.navigate('ManualEntry')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="create-outline" size={20} color={colors.textPrimary} />
+              <Text style={[styles.rescanText, { color: colors.textPrimary }]}>Enter Manually</Text>
             </TouchableOpacity>
           )}
         </View>

@@ -4,8 +4,8 @@ import * as SecureStore from 'expo-secure-store';
 // Use your machine's local IP when testing on a physical device
 // Use 10.0.2.2 for Android emulator, localhost for iOS simulator
 // const BASE_URL = 'http://192.168.29.104:5000';
-// const BASE_URL = 'https://inger-inorganic-jackie.ngrok-free.dev';
-const BASE_URL = 'https://api.ritikkumar.dev';
+const BASE_URL = 'https://inger-inorganic-jackie.ngrok-free.dev';
+// const BASE_URL = 'https://api.ritikkumar.dev';
 
 
 const api = axios.create({
@@ -64,11 +64,17 @@ export const userAPI = {
 export const foodAPI = {
   getByBarcode: (barcode) => api.get(`/food/barcode/${barcode}`),
   search: (query, page = 1) => api.get('/food/search', { params: { q: query, page } }),
+  createManualProduct: (description) => api.post('/food/manual', { description }),
 };
 
 export const analysisAPI = {
   analyze: (barcode) => api.post('/analyze', { barcode }),
   getHistory: (page = 1, limit = 20) => api.get('/analyze/history', { params: { page, limit } }),
+};
+
+export const consumptionAPI = {
+  logConsumption: (barcode, quantity) => api.post('/consume', { barcode, quantity }),
+  getAnalytics: () => api.get('/analytics'),
 };
 
 export default api;

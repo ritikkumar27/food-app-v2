@@ -13,6 +13,10 @@ import ScannerScreen from '../screens/ScannerScreen';
 import ResultScreen from '../screens/ResultScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
+import ManualEntryScreen from '../screens/ManualEntryScreen';
+// import HistoryScreen from '../screens/HistoryScreen';
+// import AnalyticsScreen from '../screens/AnalyticsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +40,8 @@ const MainStack = () => (
     <Stack.Screen name="Result" component={ResultScreen} />
     <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
     <Stack.Screen name="History" component={HistoryScreen} />
+    <Stack.Screen name="Analytics" component={AnalyticsScreen} />
+    <Stack.Screen name="ManualEntry" component={ManualEntryScreen} />
   </Stack.Navigator>
 );
 

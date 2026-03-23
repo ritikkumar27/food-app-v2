@@ -140,6 +140,22 @@ const HomeScreen = ({ navigation }) => {
           <Ionicons name="chevron-forward" size={24} color={colors.textMuted} />
         </TouchableOpacity>
 
+        {/* Analytics button */}
+        <TouchableOpacity
+          style={styles.scanButton}
+          onPress={() => navigation.navigate('Analytics')}
+          activeOpacity={0.8}
+        >
+          <View style={[styles.scanIconContainer, { backgroundColor: colors.accent }]}>
+            <Ionicons name="stats-chart" size={36} color={colors.white} />
+          </View>
+          <View style={styles.scanTextContainer}>
+            <Text style={styles.scanTitle}>Health Analytics</Text>
+            <Text style={styles.scanSubtitle}>View your 30-day nutrition score</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color={colors.textMuted} />
+        </TouchableOpacity>
+
         {/* Search results */}
         {showSearch && (
           <View style={styles.section}>
