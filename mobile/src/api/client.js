@@ -77,4 +77,8 @@ export const consumptionAPI = {
   getAnalytics: () => api.get('/analytics'),
 };
 
+export const tipsAPI = {
+  getDailyTip: () => api.get('/tips/daily'),
+};
+
 export default api;

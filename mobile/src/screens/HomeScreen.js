@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { foodAPI, analysisAPI } from '../api/client';
+import { foodAPI, analysisAPI, tipsAPI } from '../api/client';
 import ProductCard from '../components/ProductCard';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius, fontSize, fontWeight } from '../theme/typography';
@@ -18,6 +18,9 @@ const HomeScreen = ({ navigation }) => {
   const [recentScans, setRecentScans] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [dailyTip, setDailyTip] = useState(null);
+  const [tipLoading, setTipLoading] = useState(true);
+  const [tipExpanded, setTipExpanded] = useState(false);
 
   const loadRecentScans = useCallback(async () => {
     try {
@@ -32,7 +35,22 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadRecentScans();
+    loadDailyTip();
   }, [loadRecentScans]);
+
+  const loadDailyTip = async () => {
+    setTipLoading(true);
+    try {
+      const response = await tipsAPI.getDailyTip();
+      if (response.data?.success) {
+        setDailyTip(response.data.data);
+      }
+    } catch (error) {
+      console.log('Failed to load daily tip:', error.message);
+    } finally {
+      setTipLoading(false);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -104,6 +122,48 @@ const HomeScreen = ({ navigation }) => {
             ))}
           </View>
         )}
+
+        {/* Tip of the Day */}
+        {tipLoading ? (
+          <View style={styles.tipCardLoading}>
+            <View style={styles.tipShimmer} />
+            <View style={[styles.tipShimmer, { width: '60%', marginTop: 8 }]} />
+          </View>
+        ) : dailyTip ? (
+          <TouchableOpacity
+            style={styles.tipCard}
+            activeOpacity={0.85}
+            onPress={() => setTipExpanded(!tipExpanded)}
+          >
+            <View style={styles.tipHeader}>
+              <View style={styles.tipCategoryBadge}>
+                <Ionicons
+                  name={
+                    dailyTip.category === 'Hydration' ? 'water-outline' :
+                    dailyTip.category === 'Exercise' ? 'fitness-outline' :
+                    dailyTip.category === 'Sleep' ? 'moon-outline' :
+                    dailyTip.category === 'Mindful Eating' ? 'leaf-outline' :
+                    dailyTip.category === 'Balance' ? 'scale-outline' :
+                    'nutrition-outline'
+                  }
+                  size={16}
+                  color={colors.accent}
+                />
+                <Text style={styles.tipCategoryText}>{dailyTip.category}</Text>
+              </View>
+              <Text style={styles.tipLabel}>💡 Tip of the Day</Text>
+            </View>
+            <Text style={styles.tipText}>{dailyTip.tip}</Text>
+            {tipExpanded && dailyTip.explanation ? (
+              <Text style={styles.tipExplanation}>{dailyTip.explanation}</Text>
+            ) : null}
+            {dailyTip.explanation ? (
+              <Text style={styles.tipToggle}>
+                {tipExpanded ? 'Show less' : 'Tap to learn more'}
+              </Text>
+            ) : null}
+          </TouchableOpacity>
+        ) : null}
 
         {/* Search bar */}
         <View style={styles.searchContainer}>
@@ -274,6 +334,45 @@ const styles = StyleSheet.create({
     padding: spacing.md, gap: spacing.sm, marginTop: spacing.lg,
   },
   logoutText: { color: colors.highRisk, fontSize: fontSize.md, fontWeight: fontWeight.medium },
+
+  // Tip of the Day
+  tipCardLoading: {
+    backgroundColor: colors.surface, borderRadius: borderRadius.xl,
+    padding: spacing.lg, marginBottom: spacing.lg,
+    borderWidth: 1, borderColor: colors.border,
+  },
+  tipShimmer: {
+    height: 14, borderRadius: 7, backgroundColor: colors.surfaceLight, width: '80%',
+  },
+  tipCard: {
+    backgroundColor: colors.surface, borderRadius: borderRadius.xl,
+    padding: spacing.lg, marginBottom: spacing.lg,
+    borderWidth: 1, borderColor: colors.accent + '50',
+    borderLeftWidth: 4, borderLeftColor: colors.accent,
+  },
+  tipHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  tipCategoryBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: colors.accent + '15', paddingHorizontal: spacing.sm,
+    paddingVertical: 3, borderRadius: borderRadius.full,
+  },
+  tipCategoryText: { fontSize: fontSize.xs, color: colors.accent, fontWeight: fontWeight.bold },
+  tipLabel: { fontSize: fontSize.xs, color: colors.textMuted },
+  tipText: {
+    fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary,
+    lineHeight: 24, marginBottom: spacing.xs,
+  },
+  tipExplanation: {
+    fontSize: fontSize.sm, color: colors.textSecondary, lineHeight: 20,
+    marginTop: spacing.xs, marginBottom: spacing.xs,
+  },
+  tipToggle: {
+    fontSize: fontSize.xs, color: colors.accent, fontWeight: fontWeight.semibold,
+    marginTop: spacing.xs,
+  },
 });
 
 export default HomeScreen;

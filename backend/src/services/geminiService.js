@@ -230,6 +230,66 @@ Return ONLY a JSON object with this exact structure:
       };
     }
   }
+
+  async generateDailyTip(consumptionSummary, userProfile) {
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      console.warn('GEMINI_API_KEY is not set');
+      return null;
+    }
+
+    const prompt = `
+You are a certified nutritionist providing a personalized daily health tip.
+
+User Profile:
+- Age: ${userProfile.age || 'Unknown'}
+- Gender: ${userProfile.gender || 'Unknown'}
+- BMI: ${userProfile.bmi || 'Unknown'} (${userProfile.bmiCategory || 'Unknown'})
+- Health Conditions: ${userProfile.diseases?.length ? userProfile.diseases.join(', ') : 'None'}
+- Dietary Preference: ${userProfile.dietaryPreference || 'non-veg'}
+
+Recent 7-Day Consumption Summary:
+- Average Daily Calories: ${consumptionSummary.avgCalories || 0} kcal
+- Average Daily Protein: ${consumptionSummary.avgProtein || 0}g
+- Average Daily Carbs: ${consumptionSummary.avgCarbs || 0}g
+- Average Daily Fat: ${consumptionSummary.avgFat || 0}g
+- Total Meals Logged: ${consumptionSummary.totalLogs || 0}
+- Most Consumed Foods: ${consumptionSummary.topFoods || 'None tracked'}
+
+Generate ONE personalized, actionable health tip based on this user's actual behavior and profile.
+The tip must be specific to their data — not generic advice.
+Keep the tip concise (max 15 words) and the explanation brief (2-3 sentences).
+Pick a relevant category from: Nutrition, Hydration, Exercise, Sleep, Mindful Eating, Balance.
+
+Return ONLY valid JSON with this exact structure (no markdown):
+{
+  "tip": "string",
+  "explanation": "string",
+  "category": "string"
+}
+`;
+
+    try {
+      const response = await axios.post(
+        `${this.apiUrl}?key=${apiKey}`,
+        {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.3,
+          }
+        },
+        { timeout: 15000 }
+      );
+
+      let responseText = response.data.candidates[0].content.parts[0].text;
+      responseText = responseText.replace(/```json\n?/gi, '').replace(/```\n?/g, '').trim();
+      return JSON.parse(responseText);
+    } catch (error) {
+      console.error('Gemini daily tip API error:', error.message);
+      return null;
+    }
+  }
 }
 
 module.exports = new GeminiService();
