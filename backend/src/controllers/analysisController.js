@@ -1,6 +1,8 @@
 const OpenFoodFactsService = require('../services/OpenFoodFactsService');
 const IntelligenceEngineService = require('../services/IntelligenceEngineService');
 const ScanHistory = require('../models/ScanHistory');
+const FoodCache = require('../models/FoodCache');
+const geminiService = require('../services/geminiService');
 
 /**
  * POST /analyze
@@ -15,14 +17,63 @@ const analyze = async (req, res, next) => {
 
     if (barcode) {
       // Fetch food by barcode
-      const result = await OpenFoodFactsService.fetchByBarcode(barcode);
-      if (!result) {
-        return res.status(404).json({
-          success: false,
-          message: 'Product not found for this barcode.',
-        });
+      let dbFood = await FoodCache.findOne({ barcode });
+      
+      if (!dbFood) {
+        const result = await OpenFoodFactsService.fetchByBarcode(barcode);
+        if (!result) {
+          const geminiFood = await geminiService.fetchProductFallback(barcode);
+          if (geminiFood) {
+            let additivesAnalysis = [];
+            try {
+              additivesAnalysis = await geminiService.analyzeAdditives(geminiFood.ingredientsList, geminiFood.additives);
+            } catch (err) {
+              console.error('Failed to parse additives for gemini fallback', err);
+            }
+
+            dbFood = new FoodCache({
+              barcode: barcode,
+              productName: geminiFood.productName || 'Unknown AI Product',
+              brands: geminiFood.brands || 'Unknown',
+              ingredientsList: geminiFood.ingredientsList || '',
+              nutrients: geminiFood.nutrients || {},
+              additives: geminiFood.additives || [],
+              additivesDetails: additivesAnalysis,
+              isAdditivesAnalyzed: true,
+              novaGroup: geminiFood.novaGroup || null,
+              nutriScore: geminiFood.nutriScore || null,
+              source: 'ai-generated'
+            });
+            await dbFood.save();
+          } else {
+            return res.status(404).json({
+              success: false,
+              message: 'Product not found for this barcode.',
+            });
+          }
+        } else {
+          dbFood = result.product;
+        }
       }
-      food = result.product;
+
+      // Check if Additives Analysis is missing
+      if (dbFood && !dbFood.isAdditivesAnalyzed) {
+        try {
+          const additivesAnalysis = await geminiService.analyzeAdditives(dbFood.ingredientsList, dbFood.additives);
+          dbFood.additivesDetails = additivesAnalysis;
+          dbFood.isAdditivesAnalyzed = true;
+          
+          if (dbFood.save) {
+            await dbFood.save();
+          } else {
+            await FoodCache.updateOne({ barcode }, { additivesDetails: additivesAnalysis, isAdditivesAnalyzed: true });
+          }
+        } catch (err) {
+          console.error('Failed to analyze additives for product', err);
+        }
+      }
+
+      food = dbFood;
     } else if (foodData) {
       // Use provided food data directly (for testing or manual entry)
       food = foodData;

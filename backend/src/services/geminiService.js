@@ -58,7 +58,8 @@ Return ONLY a valid JSON object with the following structure:
         { timeout: 15000 }
       );
 
-      const responseText = response.data.candidates[0].content.parts[0].text;
+      let responseText = response.data.candidates[0].content.parts[0].text;
+      responseText = responseText.replace(/```json\n?/gi, '').replace(/```\n?/g, '').trim();
       return JSON.parse(responseText);
     } catch (error) {
       console.error('Gemini fallback API error:', error.response?.data || error.message);
@@ -115,7 +116,8 @@ Return ONLY a valid JSON object with the following structure:
         { timeout: 15000 }
       );
 
-      const responseText = response.data.candidates[0].content.parts[0].text;
+      let responseText = response.data.candidates[0].content.parts[0].text;
+      responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       const parsed = JSON.parse(responseText);
       if (parsed.error) return null;
       return parsed;
@@ -165,7 +167,8 @@ If there are no additives, return an empty array [].
         { timeout: 15000 }
       );
 
-      const responseText = response.data.candidates[0].content.parts[0].text;
+      let responseText = response.data.candidates[0].content.parts[0].text;
+      responseText = responseText.replace(/```json\n?/gi, '').replace(/```\n?/g, '').trim();
       return JSON.parse(responseText);
     } catch (error) {
       console.error('Gemini additive analysis API error:', error.message);
@@ -215,7 +218,8 @@ Return ONLY a JSON object with this exact structure:
         { timeout: 15000 }
       );
 
-      const responseText = response.data.candidates[0].content.parts[0].text;
+      let responseText = response.data.candidates[0].content.parts[0].text;
+      responseText = responseText.replace(/```json\n?/gi, '').replace(/```\n?/g, '').trim();
       return JSON.parse(responseText);
     } catch (error) {
       console.error('Gemini analysis API error:', error.message);
