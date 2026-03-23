@@ -125,6 +125,54 @@ Return ONLY a valid JSON object with the following structure:
     }
   }
 
+  async analyzeAdditives(ingredientsList, knownAdditives) {
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      console.warn('GEMINI_API_KEY is not set');
+      return [];
+    }
+
+    const prompt = `
+You are an expert toxicologist and nutritionist.
+A user wants to know about the additives and preservatives in their food.
+Ingredients List: ${ingredientsList || 'None provided'}
+Known Additives: ${knownAdditives ? knownAdditives.join(', ') : 'None provided'}
+
+Identify all food additives and preservatives from this data. For each additive, provide its name, its category (e.g., Preservative, Colorant, Sweetener), its risk level ('low', 'moderate', 'high'), possible health effects, and a brief 1-sentence explanation of what it does. Ensure medically reasonable and non-alarmist output. 
+Return ONLY a valid JSON array of objects with the exact structure (and no markdown formatting):
+[
+  {
+    "name": "string",
+    "category": "string",
+    "riskLevel": "low" | "moderate" | "high",
+    "healthEffects": "string",
+    "explanation": "string"
+  }
+]
+If there are no additives, return an empty array [].
+`;
+
+    try {
+      const response = await axios.post(
+        `${this.apiUrl}?key=${apiKey}`,
+        {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2,
+          }
+        },
+        { timeout: 15000 }
+      );
+
+      const responseText = response.data.candidates[0].content.parts[0].text;
+      return JSON.parse(responseText);
+    } catch (error) {
+      console.error('Gemini additive analysis API error:', error.message);
+      return [];
+    }
+  }
+
   async analyzeConsumption(nutrition, quantity, userProfile) {
     const apiKey = this.getApiKey();
     if (!apiKey) {

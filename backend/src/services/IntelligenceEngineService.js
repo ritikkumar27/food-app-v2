@@ -86,6 +86,7 @@ class IntelligenceEngineService {
       warnings,
       nutrientBreakdown,
       additiveFlags,
+      additivesDetails: food.additivesDetails || [],
       isUltraProcessed,
       novaGroup: food.novaGroup,
       nutriScore: food.nutriScore,

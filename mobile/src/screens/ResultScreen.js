@@ -288,7 +288,7 @@ const ResultScreen = ({ route, navigation }) => {
         )}
 
         {/* ═══ EXPANDABLE: Additives ═══ */}
-        {additiveFlags.length > 0 && (
+        {analysis.additivesDetails && analysis.additivesDetails.length > 0 ? (
           <>
             <TouchableOpacity
               style={styles.expandableHeader}
@@ -297,7 +297,7 @@ const ResultScreen = ({ route, navigation }) => {
             >
               <View style={styles.expandableLeft}>
                 <Ionicons name="flask-outline" size={20} color={colors.textSecondary} />
-                <Text style={styles.expandableTitle}>Additives ({additiveFlags.length})</Text>
+                <Text style={styles.expandableTitle}>Additives & Preservatives ({analysis.additivesDetails.length})</Text>
               </View>
               <Ionicons
                 name={expandedAdditives ? 'chevron-up' : 'chevron-down'}
@@ -307,23 +307,49 @@ const ResultScreen = ({ route, navigation }) => {
             </TouchableOpacity>
             {expandedAdditives && (
               <View style={styles.expandableBody}>
-                {additiveFlags.map((additive, idx) => (
-                  <View key={idx} style={styles.additiveItem}>
-                    <View style={[styles.additiveDot, {
-                      backgroundColor: additive.risk === 'high' ? colors.highRisk :
-                                       additive.risk === 'moderate' ? colors.moderate : colors.safe,
-                    }]} />
-                    <View style={styles.additiveInfo}>
-                      <Text style={styles.additiveName}>
-                        {additive.code.replace('en:', '').toUpperCase()} — {additive.name}
-                      </Text>
-                      <Text style={styles.additiveConcern}>{additive.concern}</Text>
+                {analysis.additivesDetails.map((additive, idx) => (
+                  <View key={idx} style={[styles.additiveCard, { 
+                    borderLeftColor: additive.riskLevel === 'high' ? colors.highRisk : 
+                                     additive.riskLevel === 'moderate' ? colors.moderate : colors.safe 
+                  }]}>
+                    <View style={styles.additiveHeaderRow}>
+                      <Text style={styles.additiveName}>{additive.name}</Text>
+                      <View style={[styles.additiveRiskBadge, {
+                        backgroundColor: additive.riskLevel === 'high' ? colors.highRisk + '20' : 
+                                         additive.riskLevel === 'moderate' ? colors.moderate + '20' : colors.safe + '20'
+                      }]}>
+                        <Text style={[styles.additiveRiskText, {
+                          color: additive.riskLevel === 'high' ? colors.highRisk : 
+                                 additive.riskLevel === 'moderate' ? colors.moderate : colors.safe
+                        }]}>
+                          {additive.riskLevel.toUpperCase()} RISK
+                        </Text>
+                      </View>
                     </View>
+                    
+                    <View style={styles.additiveCategoryRow}>
+                      <Ionicons name="pricetag-outline" size={14} color={colors.textMuted} />
+                      <Text style={styles.additiveCategory}>{additive.category}</Text>
+                    </View>
+                    
+                    <Text style={styles.additiveExplanation}>{additive.explanation}</Text>
+                    
+                    {additive.healthEffects && (
+                      <View style={styles.additiveEffectsBox}>
+                        <Ionicons name="medical-outline" size={14} color={colors.primary} />
+                        <Text style={styles.additiveEffectsText}>{additive.healthEffects}</Text>
+                      </View>
+                    )}
                   </View>
                 ))}
               </View>
             )}
           </>
+        ) : (
+          <View style={styles.noAdditivesCard}>
+            <Ionicons name="leaf-outline" size={24} color={colors.safe} />
+            <Text style={styles.noAdditivesText}>No known concerning additives or preservatives detected.</Text>
+          </View>
         )}
 
         {/* NutriScore */}
@@ -484,13 +510,28 @@ const styles = StyleSheet.create({
   },
 
   // Additives
-  additiveItem: {
-    flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.md,
+  additiveCard: {
+    backgroundColor: colors.surfaceLight, borderRadius: borderRadius.md, padding: spacing.md,
+    marginBottom: spacing.md, borderLeftWidth: 4, 
   },
-  additiveDot: { width: 8, height: 8, borderRadius: 4, marginTop: 6, marginRight: spacing.md },
-  additiveInfo: { flex: 1 },
-  additiveName: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textPrimary },
-  additiveConcern: { fontSize: fontSize.xs, color: colors.textMuted, marginTop: 2 },
+  additiveHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs },
+  additiveName: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary, flex: 1, marginRight: spacing.xs },
+  additiveRiskBadge: { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: borderRadius.sm },
+  additiveRiskText: { fontSize: 10, fontWeight: fontWeight.bold },
+  additiveCategoryRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: spacing.sm },
+  additiveCategory: { fontSize: fontSize.sm, color: colors.textMuted },
+  additiveExplanation: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: spacing.sm, lineHeight: 20 },
+  additiveEffectsBox: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs,
+    backgroundColor: colors.primary + '10', padding: spacing.sm, borderRadius: borderRadius.sm
+  },
+  additiveEffectsText: { fontSize: fontSize.sm, color: colors.primary, flex: 1, lineHeight: 18 },
+  noAdditivesCard: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.lg,
+    backgroundColor: colors.safe + '10', borderRadius: borderRadius.lg, marginBottom: spacing.lg,
+    borderWidth: 1, borderColor: colors.safe + '40'
+  },
+  noAdditivesText: { fontSize: fontSize.sm, color: colors.safe, fontWeight: fontWeight.medium, flex: 1 },
 
   // NutriScore
   nutriScoreRow: {

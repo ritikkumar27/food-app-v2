@@ -29,6 +29,14 @@ const foodCacheSchema = new mongoose.Schema({
   },
 
   additives: [{ type: String }],  // e.g., ['en:e621', 'en:e211']
+  additivesDetails: [{
+    name: String,
+    category: String,
+    riskLevel: { type: String, enum: ['low', 'moderate', 'high'] },
+    healthEffects: String,
+    explanation: String
+  }],
+  isAdditivesAnalyzed: { type: Boolean, default: false },
   novaGroup: { type: Number, default: null },  // 1-4 (processing level)
   nutriScore: { type: String, default: null }, // a-e
 
