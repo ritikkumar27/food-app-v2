@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.35)',
     justifyContent: 'space-between',
   },
   header: {

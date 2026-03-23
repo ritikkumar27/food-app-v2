@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     width: 40, height: 40, borderRadius: 20,
-    backgroundColor: colors.surfaceBg, justifyContent: 'center', alignItems: 'center',
+    backgroundColor: colors.surfaceLight, justifyContent: 'center', alignItems: 'center',
     borderWidth: 1, borderColor: colors.border,
   },
   headerTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.textPrimary },

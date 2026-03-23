@@ -1,53 +1,54 @@
 /**
- * NutriGuard Color Palette — Dark-mode-first, premium design
+ * NutriGuard Color Palette — Light wellness theme
+ * Soft, natural, health-oriented palette
  */
 const colors = {
   // Background layers
-  background: '#0A0E1A',
-  surface: '#141929',
-  surfaceLight: '#1E2438',
-  surfaceElevated: '#252B3F',
+  background: '#F7F5F2',
+  surface: '#FFFFFF',
+  surfaceLight: '#F0EDE8',
+  surfaceElevated: '#FFFFFF',
 
-  // Primary brand
-  primary: '#6C63FF',
-  primaryLight: '#8B85FF',
-  primaryDark: '#4F46CC',
+  // Primary brand — soft sage green
+  primary: '#4A9D7C',
+  primaryLight: '#6BB89A',
+  primaryDark: '#3A7D62',
 
-  // Risk colors
-  safe: '#00D68F',
-  safeLight: '#33E0A8',
-  safeBg: 'rgba(0, 214, 143, 0.12)',
+  // Risk colors (muted, non-aggressive)
+  safe: '#5BAE8C',
+  safeLight: '#7CC4A6',
+  safeBg: 'rgba(91, 174, 140, 0.12)',
 
-  moderate: '#FFB547',
-  moderateLight: '#FFC76D',
-  moderateBg: 'rgba(255, 181, 71, 0.12)',
+  moderate: '#D4A853',
+  moderateLight: '#E0BD73',
+  moderateBg: 'rgba(212, 168, 83, 0.12)',
 
-  highRisk: '#FF4757',
-  highRiskLight: '#FF6B7A',
-  highRiskBg: 'rgba(255, 71, 87, 0.12)',
+  highRisk: '#C96B6B',
+  highRiskLight: '#D98E8E',
+  highRiskBg: 'rgba(201, 107, 107, 0.12)',
 
-  // Text
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A0A8C4',
-  textMuted: '#6B7394',
-  textInverse: '#0A0E1A',
+  // Text — dark gray, never pure black
+  textPrimary: '#2D3436',
+  textSecondary: '#636E72',
+  textMuted: '#A0A8B0',
+  textInverse: '#FFFFFF',
 
-  // Accent
-  accent: '#00B8D4',
-  accentLight: '#33C9DF',
+  // Accent — soft teal
+  accent: '#7AADBD',
+  accentLight: '#9DC4D0',
 
   // UI elements
-  border: '#2A3150',
-  borderLight: '#363D5A',
-  inputBg: '#1A1F33',
-  overlay: 'rgba(10, 14, 26, 0.8)',
+  border: '#E8E2DB',
+  borderLight: '#F0EBE4',
+  inputBg: '#F5F2EE',
+  overlay: 'rgba(45, 52, 54, 0.5)',
   
   // Status
-  error: '#FF4757',
-  errorBg: 'rgba(255, 71, 87, 0.12)',
-  success: '#00D68F',
-  warning: '#FFB547',
-  info: '#00B8D4',
+  error: '#C96B6B',
+  errorBg: 'rgba(201, 107, 107, 0.10)',
+  success: '#5BAE8C',
+  warning: '#D4A853',
+  info: '#7AADBD',
 
   // Misc
   white: '#FFFFFF',

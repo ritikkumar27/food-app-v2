@@ -57,9 +57,9 @@ const AnalyticsScreen = ({ navigation }) => {
   const pieData = data.macroDistribution?.length > 0
     ? data.macroDistribution
     : [
-      { name: 'Protein', population: 1, color: '#FF6384', legendFontColor: '#7F7F7F', legendFontSize: 12 },
-      { name: 'Carbs', population: 1, color: '#36A2EB', legendFontColor: '#7F7F7F', legendFontSize: 12 },
-      { name: 'Fat', population: 1, color: '#FFCE56', legendFontColor: '#7F7F7F', legendFontSize: 12 }
+      { name: 'Protein', population: 1, color: '#5BAE8C', legendFontColor: '#636E72', legendFontSize: 12 },
+      { name: 'Carbs', population: 1, color: '#7AADBD', legendFontColor: '#636E72', legendFontSize: 12 },
+      { name: 'Fat', population: 1, color: '#D4A853', legendFontColor: '#636E72', legendFontSize: 12 }
     ];
 
   return (
